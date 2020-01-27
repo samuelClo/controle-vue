@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<main id="app">
+  <input type="text" v-model="search">
+  <div
+    v-if="users"
+    v-for="user in filterText"
+  >
+    {{ user.name }}
+  </div>
+</main>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            users: [],
+            search: '',
+        },
+        computed: {
+            filterText: function () {
+                if (!this.users)
+                    return
+
+                return this.users.filter(el => el.name.toLowerCase().includes(this.search.toLowerCase()))
+            }
+        },
+        mounted: function () {
+            fetch('https://jsonplaceholder.typicode.com/users', {})
+                .then(res => res.json())
+                .then(data => {
+                    this.users = data
+                })
+        }
+    })
+</script>
+
+</html>

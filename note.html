@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    #sumbitNote {
+      display: inline;
+      cursor: pointer;
+      background-color: #44743d;
+      color: white;
+      padding: 10px 15px;
+    }
+    #note  {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      padding: 50px;
+      border-radius: 5px;
+      transform: translate(-50%, 50%);
+    }
+    main {
+      width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial;
+    }
+    #noteInput {
+      outline: none;
+      border-radius: unset;
+      border: 1px solid grey;
+      border-bottom: unset;
+      padding: 5px 15px;
+    }
+    .notes {
+      width: 200px;
+      padding: 5px 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      margin-bottom: 5px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+    .notes > span {
+      width: 90%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .notes > img {
+      height: 20px;
+      width: 20px;
+    }
+    #countWord {
+      color: #4b4b4b;
+      font-size: 80%;
+    }
+  </style>
+</head>
+<body>
+<main id="app">
+  <div style="margin-bottom: 20px; display: flex; flex-direction: column;">
+    <input id="noteInput" type="text" v-model="noteInput">
+    <div @click="submitNote" id="sumbitNote">Create note</div>
+    <span id="countWord"> words: {{ wordCount }}</span>
+  </div>
+  <div
+    v-if="notes"
+    v-for="note in notes"
+  >
+    <div class="notes">
+     <span @click="revealNote(note)">{{ note }}</span>
+      <img
+        @click="deleteNote(note)"
+        src="pictures/x-mark.png"
+        alt="delete this task"
+      >
+    </div>
+  </div>
+  <div id="note">
+    {{note}}
+  </div>
+</main>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            noteInput: '',
+            note: '',
+            notes: [],
+        },
+        computed: {
+            wordCount: function () {
+                if (!this.noteInput)
+                    return
+
+                return this.noteInput.trim().split(' ').length
+            }
+        },
+        methods: {
+            submitNote() {
+                if (!this.noteInput)
+                    return
+
+                this.notes.push(this.noteInput)
+                localStorage.setItem('notes', JSON.stringify(this.notes));
+                this.noteInput = ''
+            },
+            deleteNote(note) {
+                this.notes.splice(this.notes.indexOf(note),1);
+                localStorage.setItem('notes', JSON.stringify(this.notes));
+            },
+            revealNote(note) {
+                this.note = note
+            }
+        },
+        mounted: function () {
+            if (!JSON.parse(localStorage.notes))
+                return
+            this.notes = JSON.parse(localStorage.notes)
+        }
+    })
+</script>
+
+</html>
